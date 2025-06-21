@@ -1,0 +1,13 @@
+Thank you for your purchase!
+
+Materials used for plants and cactus were created using Universal Render Pipeline/Nature/SpeedTree8_PBRLit shader.
+Unity version: Unity 2022.3.27f1
+Feel free to create your own shaders and materials using textures we made. :)
+
+If you have any questions please don't hesitate to contact us:
+
+Email: arcaneowlstudio@yahoo.com
+Artstation: www.artstation.com/arcaneowlstudio
+Linkedin: www.linkedin.com/company/arcane-owl-studio
+Instagram: www.instagram.com/arcaneowlstudio
+
