@@ -1,0 +1,34 @@
+{
+    "name": "PlayerInputActions",
+    "maps": [
+        {
+            "name": "PlayerActionMap",
+            "id": "6c9ef89f-a259-42ad-8105-99b73f8832e7",
+            "actions": [
+                {
+                    "name": "MouseLook",
+                    "type": "Value",
+                    "id": "352daf79-017b-43ec-a169-011bdc96f928",
+                    "expectedControlType": "Delta",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c5084548-6d7f-4f14-b565-fef364a3e9ad",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseLook",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
