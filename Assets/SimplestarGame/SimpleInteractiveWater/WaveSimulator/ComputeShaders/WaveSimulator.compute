@@ -1,0 +1,74 @@
+﻿// original idea is from this qiita topic https://qiita.com/aa_debdeb/items/1d69d49333630b06f6ce
+#pragma kernel Initialize
+#pragma kernel AddWave
+#pragma kernel Update
+#pragma kernel Replace
+
+RWTexture2D<float> lastWaveTexture;
+RWTexture2D<float> currWaveTexture;
+RWTexture2D<float> nextWaveTexture;
+float waveCoef;
+float deltaSize;
+float deltaTime;
+float3 addPoint;
+
+[numthreads(8, 8, 1)]
+void Initialize(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    lastWaveTexture[dispatchThreadId.xy] = 0;
+    currWaveTexture[dispatchThreadId.xy] = 0;
+}
+
+[numthreads(8, 8, 1)]
+void AddWave(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    float width, height;
+    currWaveTexture.GetDimensions(width, height);
+
+    float x = (dispatchThreadId.x / width) * 2.0 - 1.0;
+    float y = (dispatchThreadId.y / height) * 2.0 - 1.0;
+
+    float dx = addPoint.x - x;
+    float dy = addPoint.y - y;
+
+    float r = sqrt(dx * dx + dy * dy);
+
+    float h = addPoint.z * pow(max(0.04 - r, 0.0), 0.5);
+    currWaveTexture[dispatchThreadId.xy] -= h;
+}
+
+[numthreads(8, 8, 1)]
+void Update(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    float width, height;
+    currWaveTexture.GetDimensions(width, height);
+
+    float last = lastWaveTexture[dispatchThreadId.xy];
+    float current = currWaveTexture[dispatchThreadId.xy];
+    float next =
+        // Wave equation
+        2.0 * current - last
+        + (deltaTime * deltaTime * waveCoef * waveCoef) / (deltaSize * deltaSize)
+        * (
+            (dispatchThreadId.x != 0 ? currWaveTexture[dispatchThreadId.xy + uint2(-1, 0)] : current)
+            + (dispatchThreadId.x < uint(width - 1) ? currWaveTexture[dispatchThreadId.xy + uint2(1, 0)] : current)
+            + (dispatchThreadId.y != 0 ? currWaveTexture[dispatchThreadId.xy + uint2(0, -1)] : current)
+            + (dispatchThreadId.y < uint(height - 1) ? currWaveTexture[dispatchThreadId.xy + uint2(0, 1)] : current)
+            - 4.0 * current )
+        // Damping force
+        - 0.04 * deltaTime * (current - last)
+        // Restoring force
+        -0.0001 * deltaTime * (current);
+
+    nextWaveTexture[dispatchThreadId.xy] = clamp(next, -5, 5);
+}
+
+[numthreads(8, 8, 1)]
+void Replace(uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    float current = currWaveTexture[dispatchThreadId.xy];
+    float next = nextWaveTexture[dispatchThreadId.xy];
+
+    lastWaveTexture[dispatchThreadId.xy] = current;
+    currWaveTexture[dispatchThreadId.xy] = next;
+}
